@@ -139,6 +139,8 @@ namespace MachoBateriasAPI.Data
         public DbSet<MachoBateriasAPI.Models.Buys>? Buys { get; set; }
         public DbSet<MachoBateriasAPI.Models.SaleProduct>? SaleProduct { get; set; }
 
+
+
         //consulta para los productos de cada factura
         public async Task<List<Product>> GetProductsForSaleAsync(int saleId)
         {
@@ -156,13 +158,18 @@ namespace MachoBateriasAPI.Data
             return productsForSale;
         }
 
-        //consulta para los productos de cada factura
-        public DbSet<MachoBateriasAPI.Models.Branch>? Branch { get; set; }
 
-        //consulta para los productos de cada factura
+
+
+
+
+
+
+        //consulta para los productos de cada compra
+        public DbSet<MachoBateriasAPI.Models.Branch>? Branch { get; set; }
         public DbSet<MachoBateriasAPI.Models.BuysProduct>? BuysProduct { get; set; }
 
-        //consulta para los productos de cada factura
+        //consulta para los productos de cada compra
         public async Task<List<Product>> GetProductsForBuysAsync(int buysId)
         {
             var productIdsForBuys = await BuysProduct
