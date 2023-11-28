@@ -143,5 +143,27 @@ namespace MachoBateriasAPI.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+        [HttpGet("{saleId}/saleproducts")]
+        public async Task<ActionResult<List<SaleProduct>>> GetSaleProducts(int saleId)
+        {
+            try
+            {
+                // Llama al método del servicio que obtiene los productos para la venta específica
+                var productsForSale = await _context.GetSaleProductsAsync(saleId);
+
+                if (productsForSale == null || productsForSale.Count == 0)
+                {
+                    return NotFound($"No se encontraron productos para la venta con ID {saleId}.");
+                }
+
+                return Ok(productsForSale);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
     }
 }
