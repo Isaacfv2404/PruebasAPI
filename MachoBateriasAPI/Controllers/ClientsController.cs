@@ -32,6 +32,21 @@ namespace MachoBateriasAPI.Controllers
             return await _context.Client.ToListAsync();
         }
 
+        [HttpGet("verificarCliente/{identification}")]
+        public IActionResult VerificarEmpleado(string identification)
+        {
+            var existeCedula = _context.Client.Any(c => c.identification == identification);
+
+            return Ok(new { existeCedula = existeCedula });
+        }
+        [HttpGet("verificarEmail/{email}")]
+        public IActionResult VerificarEmail(string email)
+        {
+            var existeEmail = _context.Client.Any(c => c.email == email);
+
+            return Ok(new { existeEmail = existeEmail });
+        }
+
         // GET: api/Clients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
