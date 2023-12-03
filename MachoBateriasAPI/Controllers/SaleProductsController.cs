@@ -48,6 +48,20 @@ namespace MachoBateriasAPI.Controllers
 
             return salep;
         }
+        [HttpGet("{saleId}/{productId}")]
+        public async Task<ActionResult<SaleProduct>> GetSaleProduct(int saleId, int productId)
+        {
+            var saleProduct = await _context.SaleProduct
+                .FirstOrDefaultAsync(sp => sp.saleId == saleId && sp.productId == productId);
+
+            if (saleProduct == null)
+            {
+                return NotFound(); // Puedes devolver un código 404 si no se encuentra el SaleProduct
+            }
+
+            return saleProduct;
+        }
+
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
