@@ -191,5 +191,13 @@ namespace MachoBateriasAPI.Data
 
             return productsForBuys;
         }
+        public async Task<List<BuysProduct>> GetBuysProductsAsync(int buysId)
+        {
+            var buysProducts = await BuysProduct
+                .Where(sp => sp.buysId == buysId)
+                .ToListAsync();
+
+            return buysProducts;
+        }
     }
 }

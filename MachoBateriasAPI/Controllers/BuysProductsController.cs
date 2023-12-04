@@ -50,6 +50,19 @@ namespace MachoBateriasAPI.Controllers
 
             return buysProduct;
         }
+        [HttpGet("{buysId}/{productId}")]
+        public async Task<ActionResult<BuysProduct>> GetBuysProduct(int buysId, int productId)
+        {
+            var buysProduct = await _context.BuysProduct
+                .FirstOrDefaultAsync(sp => sp.buysId == buysId && sp.productId == productId);
+
+            if (buysProduct == null)
+            {
+                return NotFound(); // Puedes devolver un código 404 si no se encuentra el SaleProduct
+            }
+
+            return buysProduct;
+        }
 
         // PUT: api/BuysProducts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -135,6 +148,27 @@ namespace MachoBateriasAPI.Controllers
                 if (productsForBuys == null || productsForBuys.Count == 0)
                 {
                     return NotFound("No se encontraron productos para la compra especificada.");
+                }
+
+                return Ok(productsForBuys);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{buysId}/buysproducts")]
+        public async Task<ActionResult<List<BuysProduct>>> GetBuysProducts(int buysId)
+        {
+            try
+            {
+                // Llama al método del servicio que obtiene los productos para la venta específica
+                var productsForBuys = await _context.GetBuysProductsAsync(buysId);
+
+                if (productsForBuys == null || productsForBuys.Count == 0)
+                {
+                    return NotFound($"No se encontraron productos para la venta con ID {buysId}.");
                 }
 
                 return Ok(productsForBuys);
