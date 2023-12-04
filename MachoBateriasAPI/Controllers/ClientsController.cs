@@ -25,11 +25,14 @@ namespace MachoBateriasAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetClient()
         {
-          if (_context.Client == null)
-          {
-              return NotFound();
-          }
-            return await _context.Client.ToListAsync();
+          var activeClients = await _context.Client
+                .Where(c => c.activo)
+                .ToListAsync();
+            if(activeClients == null || activeClients.Count == 0)
+            {
+                return NotFound();
+            }
+            return activeClients;
         }
 
         [HttpGet("verificarCliente/{identification}")]
@@ -95,6 +98,36 @@ namespace MachoBateriasAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPut("delete/{id}")]
+        public async Task<IActionResult> PutClientDelete(int id, bool activo)
+        {
+            try
+            {
+                // Busca el vehículo por ID
+                var client = await _context.Client.FindAsync(id);
+
+                if (client == null)
+                {
+                    return NotFound(); // El vehículo no fue encontrado
+                }
+
+                // Actualiza el valor de "activo"
+                client.activo = activo;
+
+                // Guarda los cambios en la base de datos
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Registra la excepción para diagnóstico
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
+
 
         // POST: api/Clients
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

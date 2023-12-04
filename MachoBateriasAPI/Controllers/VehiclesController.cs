@@ -23,14 +23,20 @@ namespace MachoBateriasAPI.Controllers
 
         // GET: api/Vehicles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicle()
+        public async Task<ActionResult<IEnumerable<Vehicle>>> GetActiveVehicles()
         {
-          if (_context.Vehicle == null)
-          {
-              return NotFound();
-          }
-            return await _context.Vehicle.ToListAsync();
+            var activeVehicles = await _context.Vehicle
+                                               .Where(v => v.activo)
+                                               .ToListAsync();
+
+            if (activeVehicles == null || activeVehicles.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return activeVehicles;
         }
+
 
         // GET: api/Vehicles/5
         [HttpGet("{id}")]
@@ -80,6 +86,36 @@ namespace MachoBateriasAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPut("delete/{id}")]
+        public async Task<IActionResult> PutVehicleDelete(int id, bool activo)
+        {
+            try
+            {
+                // Busca el vehículo por ID
+                var vehicle = await _context.Vehicle.FindAsync(id);
+
+                if (vehicle == null)
+                {
+                    return NotFound(); // El vehículo no fue encontrado
+                }
+
+                // Actualiza el valor de "activo"
+                vehicle.activo = activo;
+
+                // Guarda los cambios en la base de datos
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Registra la excepción para diagnóstico
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
+
 
         // POST: api/Vehicles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -30,11 +30,16 @@ namespace MachoBateriasAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
         {
-          if (_context.Employee == null)
-          {
-              return NotFound();
-          }
-            return await _context.Employee.ToListAsync();
+            var activeEmployee = await _context.Employee
+                                                  .Where(e => e.activo)
+                                                  .ToListAsync();
+
+            if (activeEmployee == null || activeEmployee.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return activeEmployee;
         }
 
         [HttpGet("verificarEmpleado/{identification}")]
@@ -68,6 +73,35 @@ namespace MachoBateriasAPI.Controllers
             }
 
             return employee;
+        }
+
+        [HttpPut("delete/{id}")]
+        public async Task<IActionResult> PutEmployeeDelete(int id, bool activo)
+        {
+            try
+            {
+                // Busca el vehículo por ID
+                var employee = await _context.Employee.FindAsync(id);
+
+                if (employee == null)
+                {
+                    return NotFound(); // El vehículo no fue encontrado
+                }
+
+                // Actualiza el valor de "activo"
+                employee.activo = activo;
+
+                // Guarda los cambios en la base de datos
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Registra la excepción para diagnóstico
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         // PUT: api/Employees/5
